@@ -132,18 +132,16 @@ jobs:
       if: ${{ needs.build.outputs.rebuild_flag }}
       with:
         name:  ${{ env.RELEASE_TAG }}
-        tag_name:  ${{ env.RELEASE_TAG }}
+        tag_name:  mainline
         draft: ${{ github.event_name == 'pull_request' }}
         target_commitish: ${{ steps.fetch_commit_sha.outputs.sha }} 
         body: |
-          Cutting edge XanMod kernel for WSL2, built with Clang ${{ needs.build.outputs.clang_version }} shipped by [archlinuxcn](https://github.com/archlinuxcn/repo).
-          Provide builds on different archs with matrix build utility of GitHub Action.
+          Latest Stratosphere (Locietta-XanMod) kernel for WSL2 optimized for Ryzen, built with Clang ${{ needs.build.outputs.clang_version }} shipped by [archlinuxcn](https://github.com/archlinuxcn/repo).
 
-          * `bzImage-x64v{2,3,4}` for generic-x86_64-v{2,3,4}
-          * `bzImage-skylake` for intel skylake
-
-          To check supported x86_64 level on your machine, see [how to check supported x86_64 level of the hardware](https://unix.stackexchange.com/questions/631217/how-do-i-check-if-my-cpu-supports-x86-64-v2?msclkid=42ca61e9aa7111ecbcab7bb1a4204357).
-          And if you happen to use intel skylake chips (just like me), you can choose `bzImage-skylake` for best tuning.
+          * `bzImage-zen` for Ryzen 1xxx/2xxx series CPUs
+          * `bzImage-zen2` for Ryzen 3xxx/4xxx series CPUs
+          * `bzImage-zen3` for Ryzen 5xxx/6xxx series CPUs
+          * `bzImage-zen4` for Ryzen 7xxx/8xxx series CPUs
 
           **NOTE for Win11**: the minimum requirement of Win11 ensures generic-x86_64-v3 support, so feel free to use `bzImage`.
           
