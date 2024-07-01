@@ -42,9 +42,11 @@ TBD
 ## Miscs
 
 ### Systemd
-This kernel works with the [built-in systemd support](https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/) available since WSL 0.67.6. For older WSL versions, you can use [wsl-distrod](https://github.com/nullpo-head/wsl-distrod).
+This kernel works with the [built-in systemd support](https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/) available since WSL 0.67.6. 
 
-However, some tools like [sorah/subsystemctl]((https://github.com/sorah/subsystemctl)) and [arkane-systems/genie]((https://github.com/arkane-systems/genie)) might not work due to a modified kernel version string. These tools require "microsoft" in the string, which is not included here. However, WSL2 is sufficient identification, and you can verify this using systemd-detect-virt (should return wsl).
+Alternatively, you can also use tools such as [sorah/subsystemctl](https://github.com/sorah/subsystemctl) and [arkane-systems/genie](https://github.com/arkane-systems/genie) to configure and manage systemd support
+
+For older WSL versions, you can use [wsl-distrod](https://github.com/nullpo-head/wsl-distrod).
 
 ## Credits
 
