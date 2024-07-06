@@ -15,8 +15,10 @@ We are currently releasing both latest stable (mainline) and LTS Xanmod kernels,
 - Compiled with [clang](https://clang.llvm.org/) with full Clang Link Time Optimization (LTO).
 - Compile-time optimized for AMD Ryzen Processors
 
+## Support
+Connect with other users on the [Telegram Group](https://bit.ly/StratosphereKernelHangar) or post about it on [Issues](https://github.com/taalojarvi/Stratosphere-Kernel-WSL2/issues) with logs and a short description.
 
-## Usage
+## Installation
 
 ### Manual Installation
 
@@ -37,11 +39,28 @@ kernel = the\\path\\to\\bzImage
 
 ### Update kernel
 
-TBD
+Will be addded :)
 
-## Miscs
+## Benchmarks
+```
+OS: Debian GNU/Linux bookworm 12.5 x86_64
 
-### Systemd
+Stock Kernel for WSL
+Version: Linux 5.15.153.1-microsoft-standard-WSL2
+
+Benchmark 1: hackbench -pTl 4000
+  Time (mean ± σ):      5.208 s ±  0.318 s    [User: 2.668 s, System: 25.501 s]
+  Range (min … max):    4.645 s …  5.678 s    10 runs
+ 
+
+Stratosphere Kernel for WSL
+Version: Linux 6.9.7-microsoft-Stratosphere-xanmod1
+Benchmark 1: hackbench -pTl 4000
+  Time (mean ± σ):      4.254 s ±  0.803 s    [User: 4.242 s, System: 20.178 s]
+  Range (min … max):    3.126 s …  5.428 s    10 runs
+```
+
+## Support for systemd
 This kernel works with the [built-in systemd support](https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/) available since WSL 0.67.6. 
 
 Alternatively, you can also use tools such as [sorah/subsystemctl](https://github.com/sorah/subsystemctl) and [arkane-systems/genie](https://github.com/arkane-systems/genie) to configure and manage systemd support
