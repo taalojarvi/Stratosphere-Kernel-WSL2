@@ -12,7 +12,7 @@ We are currently releasing both latest stable (mainline) and LTS Xanmod kernels,
 
 ## Features
 - Support for [dxgkrnl](https://github.com/microsoft/WSL2-Linux-Kernel/tree/linux-msft-wsl-5.15.62.1/drivers/hv/dxgkrnl) patched for **WSL2**
-- Compiled with [clang](https://clang.llvm.org/) with full Clang Link Time Optimization (LTO).
+- Compiled with [fuchsia-clang](https://github.com/ClangBuiltLinux/llvm-distributors-conf-2021/issues/14) with full Clang Link Time Optimization (LTO).
 - Compile-time optimized for AMD Ryzen Processors
 
 ## Support
