@@ -54,10 +54,10 @@ Benchmark 1: hackbench -pTl 4000
  
 
 Stratosphere Kernel for WSL
-Version: Linux 6.9.7-microsoft-Stratosphere-xanmod1
+Version: Linux 6.11.5-microsoft-Stratosphere-xanmod1
 Benchmark 1: hackbench -pTl 4000
-  Time (mean ± σ):      4.254 s ±  0.803 s    [User: 4.242 s, System: 20.178 s]
-  Range (min … max):    3.126 s …  5.428 s    10 runs
+  Time (mean ± σ):      2.903 s ±  0.473 s    [User: 3.064 s, System: 13.324 s]
+  Range (min … max):    2.518 s …  3.963 s    10 runs
 ```
 
 ## Support for systemd
