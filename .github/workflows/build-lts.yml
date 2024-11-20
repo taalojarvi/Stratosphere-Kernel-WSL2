@@ -12,11 +12,12 @@ on:
 
 env:
   IS_LTS: YES
+  MIMALLOC_ALLOW_LARGE_OS_PAGES: 1
   
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: locietta/loia-dev-base:latest
+    container: cachyos/cachyos-v3:latest
     outputs:
       current_version: ${{ steps.out.outputs.current_version }}
       release_version: ${{ steps.out.outputs.release_version }}
@@ -42,10 +43,11 @@ jobs:
     - name: Install dependencies
       id: dep
       run: |
-        pacman -Syu --noconfirm pahole xmlto inetutils bc cpio jq ccache go
+        pacman -Syu --noconfirm pahole xmlto inetutils bc cpio jq ccache git python go mimalloc
         GOBIN=/usr/bin go install go.chromium.org/luci/cipd/client/cmd/...@latest
         cipd install fuchsia/third_party/clang/linux-amd64 latest -root /usr/local/fuchsia-clang
         echo "PATH=/usr/local/fuchsia-clang/bin:$PATH" >> $GITHUB_ENV
+        echo "/usr/lib/libmimalloc.so" > /etc/ld.so.preload
 
     - name: Trust this directory
       run: git config --global --add safe.directory '*' # v2.35.3 or later
@@ -55,7 +57,7 @@ jobs:
       run: |
         export CURL_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
         export VERSION_BRANCH=$(curl -s https://xanmod.org/ -A $CURL_UA | awk '/LTS/{getline; getline; print}' | grep -oP '[0-9]+\.[0-9]+')
-        git clone https://github.com/xanmod/linux.git -b $VERSION_BRANCH --depth 1 linux
+        git clone https://gitlab.com/xanmod/linux.git -b $VERSION_BRANCH --depth 1 linux
         cd linux && ../config.sh
         scripts/config -d GENERIC_CPU3 # avoid override warning for duplicate arch flags 
         scripts/config -e ${{ matrix.arch }}
@@ -107,6 +109,8 @@ jobs:
   release-lts:
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@main
@@ -142,6 +146,6 @@ jobs:
          
         files: |
           release_images/*/*
-        token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         # generate_release_notes: true
         fail_on_unmatched_files: true
