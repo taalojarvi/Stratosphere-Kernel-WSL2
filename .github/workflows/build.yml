@@ -146,7 +146,7 @@ jobs:
         # We don't release .config files, they are in the artifact only for debugging
 
     - name: Release
-      uses: softprops/action-gh-release@v2.1.0
+      uses: softprops/action-gh-release@v2.2.0
       if: ${{ needs.build.outputs.rebuild_flag }}
       with:
         name:  ${{ env.RELEASE_TAG }}
