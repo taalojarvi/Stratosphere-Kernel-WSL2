@@ -140,7 +140,7 @@ jobs:
         draft: ${{ github.event_name == 'pull_request' }}
         target_commitish: ${{ steps.fetch_commit_sha.outputs.sha }} 
         body: |
-          Latest Stratosphere (Locietta-XanMod-LTS) kernel for WSL2 optimized for Ryzen, built with Clang ${{ needs.build.outputs.clang_version }}.
+          Latest Stratosphere (Locietta-XanMod-LTS) kernel for WSL2 optimized for Ryzen, built with ${{ needs.build.outputs.clang_version }}.
 
           * `bzImage-zen` for Ryzen 1xxx/2xxx series CPUs
           * `bzImage-zen2` for Ryzen 3xxx/4xxx series CPUs
