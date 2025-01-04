@@ -81,8 +81,9 @@ jobs:
     - name: Build kernel
       if: ${{ env.REBUILD_FLAG }}
       run: |
-        cd linux && ../build.sh
+        cd linux && ../build.sh --branch LTS
         mv arch/x86/boot/bzImage ../${{ matrix.image-name }}
+        cp .config ../.config-${{ matrix.image-name }}
         cd .. && sha256sum ${{ matrix.image-name }} > ${{ matrix.image-name }}.sha256
 
     - name: Upload bzImage
@@ -93,6 +94,7 @@ jobs:
         path: |
           ${{ matrix.image-name }}
           ${{ matrix.image-name }}.sha256
+          .config-${{ matrix.image-name }}
 
     - id: out
       run: |
