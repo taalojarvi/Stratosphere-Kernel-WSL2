@@ -175,11 +175,11 @@ jobs:
           draft: ${{ github.event_name == 'pull_request' }}
           target_commitish: ${{ steps.fetch_commit_sha.outputs.sha }}
           body: |
-             Latest Stratosphere (Locietta-XanMod-${{ inputs.branch }} ) kernel for WSL2 optimized for Ryzen, built with ${{ needs.build.outputs.clang_version }}.
-          * `bzImage-zen` for Ryzen 1xxx/2xxx series CPUs
-          * `bzImage-zen2` for Ryzen 3xxx/4xxx series CPUs
-          * `bzImage-zen3` for Ryzen 5xxx/6xxx series CPUs
-          * `bzImage-zen4` for Ryzen 7xxx/8xxx series CPUs        
+           Latest Stratosphere (Locietta-XanMod-${{ inputs.branch }} ) kernel for WSL2 optimized for Ryzen, built with ${{ needs.build.outputs.clang_version }}.
+           * `bzImage-zen` for Ryzen 1xxx/2xxx series CPUs
+           * `bzImage-zen2` for Ryzen 3xxx/4xxx series CPUs
+           * `bzImage-zen3` for Ryzen 5xxx/6xxx series CPUs
+           * `bzImage-zen4` for Ryzen 7xxx/8xxx series CPUs        
 
           files: |
             release_images/*
