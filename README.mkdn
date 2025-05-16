@@ -1,6 +1,6 @@
 # Stratosphere (xanmod-kernel) for Windows Subsystem for Linux (WSL2)
-![Kernel CI](https://github.com/taalojarvi/xanmod-kernel-WSL2/actions/workflows/build.yml/badge.svg?branch=main)
-![Kernel LTS CI](https://github.com/taalojarvi/xanmod-kernel-WSL2/actions/workflows/build-lts.yml/badge.svg?branch=main)
+![Xanmod MAIN](https://github.com/taalojarvi/xanmod-kernel-WSL2/actions/workflows/MAIN.yml/badge.svg?branch=main)
+![Xanmod LTS](https://github.com/taalojarvi/xanmod-kernel-WSL2/actions/workflows/LTS.yml/badge.svg?branch=main)
 ![](https://img.shields.io/github/license/taalojarvi/xanmod-kernel-WSL2)
 ![version](https://badgen.net/github/release/taalojarvi/xanmod-kernel-WSL2)
 
