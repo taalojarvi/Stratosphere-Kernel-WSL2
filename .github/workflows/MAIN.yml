@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     # manual trigger
   schedule:
-    - cron: '0 14 * * *'
+    - cron: '0 0 1 * *' 
 
 jobs:
   build-main:
