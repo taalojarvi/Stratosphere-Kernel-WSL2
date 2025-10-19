@@ -85,6 +85,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+sed -i '/^[[:space:]]*default "6" if / s/MEMERALDRAPIDS/MEMERALDRAPIDS || X86_NATIVE_CPU/' arch/x86/Kconfig.cpu
+
 cp ../wsl2_defconfig.$BRANCH ./arch/x86/configs/wsl2_defconfig
 
 make LLVM=1 LLVM_IAS=1 wsl2_defconfig
