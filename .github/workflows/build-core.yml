@@ -161,7 +161,7 @@ jobs:
           fi
 
       - name: Release
-        uses: softprops/action-gh-release@v2.4.2
+        uses: softprops/action-gh-release@v2.5.0
         if: ${{ needs.build.outputs.rebuild_flag }}
         with:
           name: ${{ env.RELEASE_TAG }}
