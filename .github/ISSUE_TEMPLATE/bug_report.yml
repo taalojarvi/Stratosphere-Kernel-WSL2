@@ -24,7 +24,7 @@ body:
       placeholder: "6.17.8-1.1 main-x64v3"
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: wsl-version
     attributes:
       label: "WSL version"
