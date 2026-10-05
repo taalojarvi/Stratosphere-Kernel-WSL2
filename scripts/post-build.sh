@@ -47,39 +47,79 @@ done
 IMAGE_NAME=${IMAGE_NAME:-bzImage-x64v3}
 
 # Get Kernel Version
-KERNEL_VERSION=$(make -s kernelrelease)
+KERNEL_VERSION=$(make -s LLVM=1 LLVM_IAS=1 kernelrelease)
 
-# Use isolated staging directories so a failed or repeated build cannot mix
-# artifacts from different kernel versions.
-ARTIFACTS_BUILD_DIR=$(mktemp -d -p "$PWD" ".${IMAGE_NAME}-artifacts.XXXXXX")
-trap 'rm -rf "$ARTIFACTS_BUILD_DIR"' EXIT
-MODULES_DIR="$ARTIFACTS_BUILD_DIR/modules"
-HEADERS_DIR="$ARTIFACTS_BUILD_DIR/headers"
-PERF_DIR="$ARTIFACTS_BUILD_DIR/perf"
+# Use isolated staging so repeated builds cannot mix artifacts from different
+# kernel versions.
+ADDONS_BUILD_DIR=$(mktemp -d -p "$PWD" ".${IMAGE_NAME}-addons.XXXXXX")
+trap 'rm -rf "$ADDONS_BUILD_DIR"' EXIT
+MODULES_INSTALL_DIR="$ADDONS_BUILD_DIR/modules"
+MODULES_DIR="$MODULES_INSTALL_DIR/lib/modules/$KERNEL_VERSION"
+HEADERS_DIR="$MODULES_DIR/build"
 
-# Generate kernel modules and install the exported userspace API headers.
-make INSTALL_MOD_PATH="$MODULES_DIR" INSTALL_MOD_STRIP=1 modules_install
-make INSTALL_HDR_PATH="$HEADERS_DIR" headers_install
+# Generate kernel modules and replace build-time links with a self-contained
+# external-module build tree. This helper is shared by the kernel's native
+# package targets and tracks kbuild's required files as they evolve.
+make LLVM=1 LLVM_IAS=1 \
+    INSTALL_MOD_PATH="$MODULES_INSTALL_DIR" \
+    INSTALL_MOD_STRIP=1 \
+    modules_install
+rm -f "$MODULES_DIR/build" "$MODULES_DIR/source"
+make LLVM=1 LLVM_IAS=1 run-command \
+    KBUILD_RUN_COMMAND='${srctree}/scripts/package/install-extmod-build "'"$HEADERS_DIR"'"'
 
-# Build perf with the same reduced dependency set used by the official WSL
-# custom-kernel instructions. DESTDIR receives bin/perf beneath PERF_DIR.
-make -C tools/perf \
-    NO_JEVENTS=1 \
-    NO_JVMTI=1 \
-    NO_LIBTRACEEVENT=1 \
-    WERROR=0 \
-    install \
-    DESTDIR="$PERF_DIR" \
-    prefix=/
+# Keep the exported userspace API separate from kbuild's internal headers.
+# Consumers can opt in to this kernel-specific UAPI without replacing their
+# distribution's libc headers.
+make LLVM=1 LLVM_IAS=1 INSTALL_HDR_PATH="$HEADERS_DIR/usr" headers_install
 
-# Create the artifact VHDX using WSL's kernelrelease/{modules,linux-headers,
-# perf} layout.
-../scripts/gen_artifacts_vhdx.sh \
-    "$MODULES_DIR" \
-    "$HEADERS_DIR" \
-    "$PERF_DIR" \
-    "$KERNEL_VERSION" \
-    "${IMAGE_NAME}-addons.vhdx"
+# Ship the documentation for the exact kernel sources used by this build.
+cp -a Documentation "$HEADERS_DIR/"
+install -m 644 README COPYING System.map "$HEADERS_DIR/"
+cp .config "$HEADERS_DIR/Documentation/config-$KERNEL_VERSION"
+
+# Validate all three advertised addon interfaces before creating the VHDX.
+test -f "$HEADERS_DIR/Module.symvers"
+test -f "$HEADERS_DIR/usr/include/linux/version.h"
+test -f "$HEADERS_DIR/Documentation/index.rst"
+
+SMOKE_TEST_DIR="$ADDONS_BUILD_DIR/external-module-smoke-test"
+mkdir -p "$SMOKE_TEST_DIR"
+cat >"$SMOKE_TEST_DIR/Makefile" <<'EOF'
+obj-m := wsl_addon_smoke.o
+EOF
+cat >"$SMOKE_TEST_DIR/wsl_addon_smoke.c" <<'EOF'
+#include <linux/init.h>
+#include <linux/module.h>
+
+static int __init wsl_addon_smoke_init(void)
+{
+    return 0;
+}
+
+static void __exit wsl_addon_smoke_exit(void)
+{
+}
+
+module_init(wsl_addon_smoke_init);
+module_exit(wsl_addon_smoke_exit);
+MODULE_DESCRIPTION("WSL addon header smoke test");
+MODULE_LICENSE("GPL");
+EOF
+make -s -C "$HEADERS_DIR" LLVM=1 LLVM_IAS=1 M="$SMOKE_TEST_DIR" modules
+test -f "$SMOKE_TEST_DIR/wsl_addon_smoke.ko"
+
+cat >"$SMOKE_TEST_DIR/uapi-smoke.c" <<'EOF'
+#include <linux/version.h>
+
+int uapi_version = LINUX_VERSION_CODE;
+EOF
+clang -nostdinc -I"$HEADERS_DIR/usr/include" \
+    -c "$SMOKE_TEST_DIR/uapi-smoke.c" \
+    -o "$SMOKE_TEST_DIR/uapi-smoke.o"
+
+# Create VHDX for Kernel Modules
+../scripts/gen_modules_vhdx.sh "$MODULES_INSTALL_DIR" "$KERNEL_VERSION" "${IMAGE_NAME}-addons.vhdx"
 
 # Compress the addon VHDX to reduce release and install size.
 7z a -mx=9 "${IMAGE_NAME}-addons.vhdx.7z" "${IMAGE_NAME}-addons.vhdx" >/dev/null
